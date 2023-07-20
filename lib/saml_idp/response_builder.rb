@@ -54,7 +54,7 @@ module SamlIdp
 
       builder = Builder::XmlMarkup.new
       builder.tag! "samlp:Response", resp_options do |response|
-          response.tag! 'saml2:Issuer', issuer_uri
+          response.tag! 'saml2:Issuer', issuer_uri, Format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:entity'
           sign response
           response.tag! "samlp:Status" do |status|
             status.tag! "samlp:StatusCode", Value: Saml::XML::Namespaces::Statuses::SUCCESS

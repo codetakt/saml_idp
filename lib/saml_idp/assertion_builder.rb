@@ -57,7 +57,7 @@ module SamlIdp
         ID: reference_string,
         IssueInstant: now_iso,
         Version: "2.0" do |assertion|
-          assertion.tag! 'saml2:Issuer', issuer_uri
+          assertion.tag! 'saml2:Issuer', issuer_uri, Format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:entity'
           sign assertion
           assertion.tag! 'saml2:Subject' do |subject|
             subject.tag! 'saml2:NameID', name_id, Format: name_id_format[:name], SPProvidedID: audience_uri
