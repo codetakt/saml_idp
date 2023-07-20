@@ -53,26 +53,26 @@ module SamlIdp
 
     def fresh
       builder = Builder::XmlMarkup.new
-      builder.Assertion xmlns: Saml::XML::Namespaces::ASSERTION,
+      builder.tag! 'saml2:Assertion', xmlns: Saml::XML::Namespaces::ASSERTION,
         ID: reference_string,
         IssueInstant: now_iso,
         Version: "2.0" do |assertion|
-          assertion.Issuer issuer_uri
+          assertion.tag! 'saml2:Issuer', issuer_uri
           sign assertion
-          assertion.Subject do |subject|
-            subject.NameID name_id, Format: name_id_format[:name], SPProvidedID: audience_uri
-            subject.SubjectConfirmation Method: Saml::XML::Namespaces::Methods::BEARER do |confirmation|
+          assertion.tag! 'saml2:Subject' do |subject|
+            subject.tag! 'saml2:NameID', name_id, Format: name_id_format[:name], SPProvidedID: audience_uri
+            subject.tag! 'saml2:SubjectConfirmation', Method: Saml::XML::Namespaces::Methods::BEARER do |confirmation|
               confirmation_hash = {}
               confirmation_hash[:InResponseTo] = saml_request_id unless saml_request_id.nil?
               confirmation_hash[:NotOnOrAfter] = not_on_or_after_subject
               confirmation_hash[:Recipient] = saml_acs_url
 
-              confirmation.SubjectConfirmationData "", confirmation_hash
+              confirmation.tag! 'saml2:SubjectConfirmationData', "", confirmation_hash
             end
           end
-          assertion.Conditions NotBefore: not_before, NotOnOrAfter: not_on_or_after_condition do |conditions|
-            conditions.AudienceRestriction do |restriction|
-              restriction.Audience audience_uri
+          assertion.tag! 'saml2:Conditions', NotBefore: not_before, NotOnOrAfter: not_on_or_after_condition do |conditions|
+            conditions.tag! 'saml2:AudienceRestriction' do |restriction|
+              restriction.tag! 'saml2:Audience', audience_uri
             end
           end
           authn_statement_props = {
@@ -82,21 +82,21 @@ module SamlIdp
           unless session_expiry.zero?
             authn_statement_props[:SessionNotOnOrAfter] = session_not_on_or_after
           end
-          assertion.AuthnStatement authn_statement_props do |statement|
-            statement.AuthnContext do |context|
-              context.AuthnContextClassRef authn_context_classref
+          assertion.tag! 'saml2:AuthnStatement', authn_statement_props do |statement|
+            statement.tag! 'saml2:AuthnContext' do |context|
+              context.tag! 'saml2:AuthnContextClassRef', authn_context_classref
             end
           end
           if asserted_attributes
-            assertion.AttributeStatement do |attr_statement|
+            assertion.tag! 'saml2:AttributeStatement' do |attr_statement|
               asserted_attributes.each do |friendly_name, attrs|
                 attrs = (attrs || {}).with_indifferent_access
-                attr_statement.Attribute Name: attrs[:name] || friendly_name,
+                attr_statement.tag! 'saml2:Attribute', Name: attrs[:name] || friendly_name,
                   NameFormat: attrs[:name_format] || Saml::XML::Namespaces::Formats::Attr::URI,
                   FriendlyName: friendly_name.to_s do |attr|
                     values = get_values_for friendly_name, attrs[:getter]
                     values.each do |val|
-                      attr.AttributeValue val.to_s
+                      attr.tag! 'saml2:AttributeValue', val.to_s
                     end
                   end
               end

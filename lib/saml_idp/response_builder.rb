@@ -50,10 +50,11 @@ module SamlIdp
       resp_options[:Consent] = Saml::XML::Namespaces::Consents::UNSPECIFIED
       resp_options[:InResponseTo] = saml_request_id unless saml_request_id.nil?
       resp_options["xmlns:samlp"] = Saml::XML::Namespaces::PROTOCOL
+      resp_options["xmlns:saml2"] = Saml::XML::Namespaces::ASSERTION
 
       builder = Builder::XmlMarkup.new
       builder.tag! "samlp:Response", resp_options do |response|
-          response.Issuer issuer_uri, xmlns: Saml::XML::Namespaces::ASSERTION
+          response.tag! 'saml2:Issuer', issuer_uri
           sign response
           response.tag! "samlp:Status" do |status|
             status.tag! "samlp:StatusCode", Value: Saml::XML::Namespaces::Statuses::SUCCESS

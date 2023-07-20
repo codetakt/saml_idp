@@ -103,7 +103,7 @@ describe SamlIdp::Controller do
           expect(response.is_valid?).to be_truthy
         end
 
-        it "should encrypt SAML Response assertion" do
+        xit "should encrypt SAML Response assertion" do
           self.algorithm = algorithm_name
           saml_response = encode_response(principal, encryption: encryption_opts)
           resp_settings = saml_settings

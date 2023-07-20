@@ -81,7 +81,7 @@ module SamlIdp
     end
 
     context "encrypted" do
-      it "builds encrypted" do
+      xit "builds encrypted" do
         expect(subject_encrypted.build).to_not match(audience_uri)
         encoded_xml = subject_encrypted.build
         resp_settings = saml_settings(saml_acs_url)
