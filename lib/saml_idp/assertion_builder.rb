@@ -92,8 +92,7 @@ module SamlIdp
               asserted_attributes.each do |friendly_name, attrs|
                 attrs = (attrs || {}).with_indifferent_access
                 attr_statement.tag! 'saml2:Attribute', Name: attrs[:name] || friendly_name,
-                  NameFormat: attrs[:name_format] || Saml::XML::Namespaces::Formats::Attr::URI,
-                  FriendlyName: friendly_name.to_s do |attr|
+                  NameFormat: attrs[:name_format] || Saml::XML::Namespaces::Formats::Attr::URI do |attr|
                     values = get_values_for friendly_name, attrs[:getter]
                     values.each do |val|
                       attr.tag! 'saml2:AttributeValue', val.to_s
